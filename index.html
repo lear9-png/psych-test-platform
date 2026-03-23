@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心灵探索实验室</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #0a0e27;
+            min-height: 100vh;
+            color: #e0e5ec;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 星空背景 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            z-index: 0;
+        }
+        
+        .stars::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #ddd, rgba(0,0,0,0));
+            background-size: 200px 200px;
+            animation: twinkle 4s linear infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        /* 页面切换 */
+        .page {
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .page.active {
+            display: block;
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 首页 */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+            border-radius: 30px;
+            margin-bottom: 50px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .hero-icon {
+            font-size: 100px;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .hero-subtitle {
+            font-size: 18px;
+            color: #a0aec0;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 2;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 40px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            min-width: 120px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #a0aec0;
+            margin-top: 8px;
+        }
+        
+        /* 测试卡片 */
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .test-card {
+            border-radius: 30px;
+            padding: 40px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+        
+        .test-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .test-card:hover::before {
+            opacity: 1;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-15px) scale(1.02);
+        }
+        
+        .test-card.warm {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #5d4e37;
+        }
+        
+        .test-card.warm:hover {
+            border-color: #ff6b6b;
+            box-shadow: 0 30px 60px rgba(255, 107, 107, 0.3);
+        }
+        
+        .test-card.mystic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .test-card.mystic:hover {
+            border-color: #a855f7;
+            box-shadow: 0 30px 60px rgba(168, 85, 247, 0.4);
+        }
+        
+        .test-card.nature {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            color: #1a5d1a;
+        }
+        
+        .test-card.nature:hover {
+            border-color: #10b981;
+            box-shadow: 0 30px 60px rgba(16, 185, 129, 0.4);
+        }
+        
+        .test-card.ocean {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .test-card.ocean:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 30px 60px rgba(59, 130, 246, 0.4);
+        }
+        
+        .test-card .icon {
+            font-size: 80px;
+            margin-bottom: 25px;
+            display: block;
+        }
+        
+        .test-card .tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        
+        .test-card h3 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .test-card p {
+            font-size: 15px;
+            line-height: 1.8;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+        
+        .test-card .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 25px;
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .test-card .meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* 返回按钮 */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e5ec;
+            padding: 14px 28px;
+            border-radius: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateX(-5px);
+        }
+        
+        /* 测试页面 */
+        .test-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border-radius: 30px;
+            padding: 50px 40px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .test-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .test-header h2 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .test-header .subtitle {
+            color: #a0aec0;
+            line-height: 2;
+            font-size: 17px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 进度条 */
+        .progress-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 35px 45px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            font-size: 17px;
+            color: #e0e5ec;
+            font-weight: 700;
+        }
+        
+        .progress-info span:last-child {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            background-size: 200% 100%;
+            border-radius: 8px;
+            transition: all 0.5s;
+            animation: gradientMove 3s ease infinite;
+            box-shadow: 0 0 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* 问题卡片 */
+        .question-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 50px 45px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
+            animation: rotate 25s linear infinite reverse;
+        }
+        
+        .dimension-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            color: #ffffff;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 28px;
+            letter-spacing: 1px;
+            border: 1px solid rgba(102, 126, 234, 0.4);
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .question-text {
+            font-size: 24px;
+            line-height: 2;
+            color: #ffffff;
+            margin-bottom: 40px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .option-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 25px 30px;
+            border-radius: 22px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 18px;
+            color: #e0e5ec;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+            transition: left 0.6s;
+        }
+        
+        .option-btn:hover::before {
+            left: 100%;
+        }
+        
+        .option-btn:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateX(20px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .option-btn .radio {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .option-btn:hover .radio {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.3);
+            transform: scale(1.15);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .option-btn .radio::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 14px;
+            height: 14px;
+            background: #667eea;
+            border-radius: 50%;
+            opacity: 0;
+            transition: all 0.4s;
+        }
+        
+        .option-btn:hover .radio::after {
+            opacity: 0.6;
+        }
+        
+        /* 结果页面 */
+        .result-container {
+            animation: slideUp 0.8s ease-out;
+        }
+        
+        .result-header.warm {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 40px;
+            padding: 70px 50px;
+            text-align: center;
+            box-shadow: 0 25px 70px rgba(252, 182, 159, 0.4);
+            margin-bottom: 30px;
+        }
+        
+        .result-header.mystic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 40px;
+            padding: 70px 50px;
+            text-align: center;
+            box-shadow: 0 25px 70px rgba(102, 126, 234, 0.4);
+            margin-bottom: 30px;
+        }
+        
+        .result-header .result-icon {
+            font-size: 110px;
+            margin-bottom: 30px;
+            display: block;
+        }
+        
+        .result-header .result-title {
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        
+        .result-header.warm .result-title {
+            color: #5d4e37;
+        }
+        
+        .result-header.mystic .result-title {
+            color: #fff;
+        }
+        
+        .result-header .result-subtitle {
+            font-size: 18px;
+            margin-bottom: 35px;
+            line-height: 2;
+            opacity: 0.9;
+        }
+        
+        .result-header.warm .result-subtitle {
+            color: rgba(93, 78, 55, 0.85);
+        }
+        
+        .result-header.mystic .result-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .result-header .result-score {
+            display: inline-block;
+            padding: 20px 50px;
+            border-radius: 35px;
+            font-size: 26px;
+            font-weight: 700;
+        }
+        
+        .result-header.warm .result-score {
+            background: rgba(255, 255, 255, 0.5);
+            color: #5d4e37;
+        }
+        
+        .result-header.mystic .result-score {
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* 数据展示 */
+        .data-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 50px 45px;
+            margin-bottom: 35px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .data-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
+            animation: rotate 25s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .radar-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            padding: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        #radarCanvas {
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 维度卡片 - 强制横排 */
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 35px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 强制手机端也保持横排 */
+        @media (max-width: 480px) {
+            .dimension-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 15px !important;
+            }
+            
+            .dimension-card {
+                padding: 20px 15px !important;
+            }
+            
+            .dimension-card .label {
+                font-size: 13px !important;
+            }
+            
+            .dimension-card .value {
+                font-size: 26px !important;
+            }
+            
+            .dimension-card .level {
+                font-size: 12px !important;
+            }
+        }
+        
+        .dimension-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 28px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dimension-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        
+        .dimension-card:hover::before {
+            opacity: 1;
+        }
+        
+        .dimension-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(102, 126, 234, 0.4);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .dimension-card .label {
+            font-size: 15px;
+            color: #a0aec0;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dimension-card .value {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dimension-card .level {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 18px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dimension-card .bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dimension-card .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            background-size: 200% 100%;
+            border-radius: 6px;
+            transition: all 1.5s ease-out;
+            animation: gradientMove 3s ease infinite;
+            position: relative;
+        }
+        
+        /* 分析和建议 */
+        .analysis-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 50px 45px;
+            margin-bottom: 35px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .analysis-content {
+            font-size: 17px;
+            line-height: 2.2;
+            color: #e0e5ec;
+        }
+        
+        .analysis-content p {
+            margin-bottom: 22px;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            border-left: 5px solid #667eea;
+            padding: 28px;
+            border-radius: 0 25px 25px 0;
+            margin: 28px 0;
+        }
+        
+        .highlight-box strong {
+            color: #667eea;
+            font-weight: 700;
+        }
+        
+        /* 建议列表 */
+        .advice-grid {
+            display: grid;
+            gap: 18px;
+            margin-top: 30px;
+        }
+        
+        .advice-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px 30px;
+            border-radius: 22px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .advice-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(8px);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .advice-item .advice-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #667eea;
+        }
+        
+        .advice-item .advice-text {
+            font-size: 15px;
+            color: #a0aec0;
+            line-height: 1.9;
+        }
+        
+        /* 资源推荐 */
+        .resources-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 50px 45px;
+            margin-bottom: 35px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .resource-grid {
+            display: grid;
+            gap: 18px;
+            margin-top: 30px;
+        }
+        
+        .resource-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px 30px;
+            border-radius: 22px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .resource-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(8px);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .resource-item .icon {
+            font-size: 38px;
+        }
+        
+        .resource-item .content h4 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #e0e5ec;
+        }
+        
+        .resource-item .content p {
+            font-size: 14px;
+            color: #a0aec0;
+            line-height: 1.6;
+        }
+        
+        /* 底部操作按钮 */
+        .action-buttons {
+            display: flex;
+            gap: 25px;
+            margin-top: 45px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 20px 30px;
+            border-radius: 22px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+        
+        .action-btn.primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 50px rgba(102, 126, 234, 0.5);
+        }
+        
+        .action-btn.secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: #e0e5ec;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+        }
+        
+        .action-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-4px);
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 50px;
+            color: #718096;
+            font-size: 15px;
+            margin-top: 70px;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .hero-stats {
+                gap: 25px;
+                flex-wrap: wrap;
+            }
+            
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-header h2 {
+                font-size: 28px;
+            }
+            
+            .test-header .subtitle {
+                font-size: 15px;
+            }
+            
+            .question-text {
+                font-size: 20px;
+            }
+            
+            .option-btn {
+                padding: 20px 25px;
+                font-size: 16px;
+            }
+            
+            .option-btn .radio {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    
+    <div class="container">
+        <!-- 首页 -->
+        <div class="page active" id="homePage">
+            <div class="hero">
+                <div class="hero-icon">🔮</div>
+                <h1>心灵探索实验室</h1>
+                <p class="hero-subtitle">
+                    在这个快速变化的世界里，我们经常忽略内心的声音<br>
+                    通过专业的心理探索，发现真实的自己，开启蜕变之旅
+                </p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">深度测试</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">150</div>
+                        <div class="stat-label">专业题目</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">成长可能</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="test-grid">
+                <div class="test-card warm" onclick="startTest('inner-child')">
+                    <span class="icon">🧸</span>
+                    <span class="tag">温暖治愈</span>
+                    <h3>内在小孩疗愈指数</h3>
+                    <p>探索你内心深处的那个小孩，评估童年创伤修复、自我关怀、情绪觉察和疗愈成长四个维度，找到疗愈的钥匙。</p>
+                    <div class="meta">
+                        <span>📝 40题</span>
+                        <span>⏱️ 10-15分钟</span>
+                        <span>⭐ 9.9</span>
+                    </div>
+                </div>
+                
+                <div class="test-card mystic" onclick="startTest('emotion')">
+                    <span class="icon">🌈</span>
+                    <span class="tag">色彩心理</span>
+                    <h3>情绪光谱分析</h3>
+                    <p>你现在的情绪是什么颜色？探索你的情绪频率、能量波动和心理弹性，绘制你专属的情绪彩虹。</p>
+                    <div class="meta">
+                        <span>📝 35题</span>
+                        <span>⏱️ 8-12分钟</span>
+                        <span>⭐ 9.8</span>
+                    </div>
+                </div>
+                
+                <div class="test-card ocean" onclick="startTest('soul')">
+                    <span class="icon">✨</span>
+                    <span class="tag">灵性成长</span>
+                    <h3>灵魂能量测试</h3>
+                    <p>你的灵魂能量状态如何？探索你的直觉力、创造力、连接力和生命力，激活你的内在能量。</p>
+                    <div class="meta">
+                        <span>📝 40题</span>
+                        <span>⏱️ 10-15分钟</span>
+                        <span>⭐ 9.9</span>
+                    </div>
+                </div>
+                
+                <div class="test-card nature" onclick="startTest('relationship')">
+                    <span class="icon">🌊</span>
+                    <span class="tag">社交心理</span>
+                    <h3>人际关系雷达</h3>
+                    <p>你的社交能量频率如何？评估你的边界感、共情力、表达力和影响力，优化你的人际能量场。</p>
+                    <div class="meta">
+                        <span>📝 35题</span>
+                        <span>⏱️ 8-12分钟</span>
+                        <span>⭐ 9.7</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>© 2026 心灵探索实验室 | 所有测试仅供自我探索，不能替代专业心理诊断和治疗</p>
+            </div>
+        </div>
+        
+        <!-- 测试页面容器 -->
+        <div id="testContainer"></div>
+        
+        <!-- 结果页面容器 -->
+        <div id="resultContainer"></div>
+    </div>
+    
+    <script>
+        // 测试配置
+        const tests = {
+            'inner-child': {
+                id: 'inner-child',
+                name: '内在小孩疗愈指数',
+                icon: '🧸',
+                theme: 'warm',
+                description: '探索你内心深处的那个小孩，评估童年创伤修复、自我关怀、情绪觉察和疗愈成长四个维度，找到疗愈的钥匙。',
+                dimensions: ['童年创伤修复', '自我关怀能力', '情绪觉察水平', '疗愈成长进度']
+            },
+            'emotion': {
+                id: 'emotion',
+                name: '情绪光谱分析',
+                icon: '🌈',
+                theme: 'mystic',
+                description: '探索你的情绪频率、能量波动和心理弹性，绘制你专属的情绪彩虹。',
+                dimensions: ['情绪频率', '能量波动', '心理弹性', '情绪智慧']
+            },
+            'soul': {
+                id: 'soul',
+                name: '灵魂能量测试',
+                icon: '✨',
+                theme: 'ocean',
+                description: '探索你的直觉力、创造力、连接力和生命力，激活你的内在能量。',
+                dimensions: ['直觉力', '创造力', '连接力', '生命力']
+            },
+            'relationship': {
+                id: 'relationship',
+                name: '人际关系雷达',
+                icon: '🌊',
+                theme: 'nature',
+                description: '评估你的边界感、共情力、表达力和影响力，优化你的人际能量场。',
+                dimensions: ['边界感', '共情力', '表达力', '影响力']
+            }
+        };
+        
+        // 题目数据 - 深度专业版（击中主题）
+        const questionBanks = {
+            'inner-child': generateInnerChildQuestions(),
+            'emotion': generateEmotionQuestions(),
+            'soul': generateSoulQuestions(),
+            'relationship': generateRelationshipQuestions()
+        };
+        
+        function generateInnerChildQuestions() {
+            const questions = [];
+            
+            // 童年创伤维度 - 深度问题
+            const traumaQuestions = [
+                '当别人无意中提到"童年"这个词时，我的第一反应是感到温暖还是不安？',
+                '小时候我渴望的父母之爱，往往需要通过"表现得很好"才能获得吗？',
+                '童年时期，我内心最大的恐惧是否与被忽视、被否定或被抛弃有关？',
+                '即使到了现在，我是否还会在梦中回到那些让我害怕的童年场景？',
+                '在我成长的过程中，父母是否经常在我面前吵架，而我是他们的出气筒？',
+                '我是否从小就学会了"看大人脸色"来决定自己该做什么、不该做什么？',
+                '当我犯错时，父母是耐心地引导我，还是让我感到羞耻和恐惧？',
+                '我是否觉得，只有让自己变得完美、优秀，才值得被爱和接纳？',
+                '在我的童年记忆中，有多少次是真正被理解、被倾听、被接纳的？',
+                '回顾童年，我最渴望却从未得到的，到底是什么？'
+            ];
+            
+            // 自我关怀维度 - 深度问题
+            const selfCareQuestions = [
+                '当我感到难过、疲惫或受伤时，我的内心声音是在安慰我，还是在批评我？',
+                '我是否经常为了满足别人的需求，而把自己的需求放在最后一位？',
+                '当我有时间休息或放松时，我是能够安心享受，还是会感到内疚和焦虑？',
+                '当我照镜子时，我对自己说的话，是温柔鼓励还是苛刻挑剔？',
+                '我是否觉得，如果我不为别人做事、不帮助别人，我就会失去存在的价值？',
+                '当我的身体发出不适的信号时，我是立即照顾它，还是硬撑着继续工作？',
+                '我会为自己花钱买喜欢的东西作为奖励吗？还是会觉得这不值得？',
+                '我是否敢于向他人展示自己的脆弱，承认"我需要帮助"？',
+                '在过去一周里，有多少时间是我专门留给自己的，用来放松、滋养自己？',
+                '我内心深处是否真的相信：我值得被好好对待，不需要通过讨好别人来获得？'
+            ];
+            
+            // 情绪觉察维度 - 深度问题
+            const awarenessQuestions = [
+                '当我有强烈情绪升起时，我能够在那一瞬间就准确地识别出这是什么情绪吗？',
+                '当我和别人发生冲突后，我是否能清楚地知道自己为什么会那么愤怒或受伤？',
+                '当我读一本书或看一部电影时，我是否能感受到角色之间不同的情绪体验，而不仅仅是表面的情节？',
+                '当我感到身体某个部位不舒服或紧张时，我是否能联想到这可能与某种情绪有关？',
+                '当负面情绪出现时，我是能立即察觉到它的到来，还是等到爆发后才发现？',
+                '当我被问"你现在感觉如何"时，我能否用丰富的词汇描述自己的情绪状态，而不是只能说"还好"或"不好"？',
+                '在过去一个月里，我是否跟踪观察过自己的情绪变化规律，比如什么时间容易焦虑、什么时候比较平静？',
+                '当我的情绪被某个事件触发时，我是否能追溯到这个触发背后的根本原因是什么？',
+                '在我的情绪之下，是否总有一个未被满足的需求在等待被看见？',
+                '当情绪即将失控的临界点来临时，我是否有足够的时间觉察并选择不失控？'
+            ];
+            
+            // 疗愈成长维度 - 深度问题
+            const growthQuestions = [
+                '在过去一年里，我是否主动采取过任何行动来疗愈过去的创伤？',
+                '当痛苦的记忆浮现时，我是能够安住在情绪中，还是会立即逃避或压抑？',
+                '当我对自己说话时，这个声音是鼓励和支持性的，还是批评和否定的？',
+                '对于那些曾经伤害过我的人，我是否能够在内心真正地原谅他们，不再心怀怨恨？',
+                '当我感到孤独或失落时，我是否懂得如何温柔地拥抱和安慰自己内心的小孩？',
+                '我是否愿意为自己的人生选择承担责任，而不是把责任推给环境、他人或命运？',
+                '我身边是否有一些真正理解和支持我、能够陪伴我走过疗愈之路的人？',
+                '当有人侵犯我的边界时，我是否能坚定而礼貌地拒绝，而不是默默忍受？',
+                '我是否感觉到，相比于一年前，我变得更加完整、更加有力量了？',
+                '我是否对自己的未来充满信心，相信自己有能力创造更美好的人生？'
+            ];
+            
+            traumaQuestions.forEach((q, i) => questions.push({ dimension: 'trauma', text: q }));
+            selfCareQuestions.forEach((q, i) => questions.push({ dimension: 'selfCare', text: q }));
+            awarenessQuestions.forEach((q, i) => questions.push({ dimension: 'awareness', text: q }));
+            growthQuestions.forEach((q, i) => questions.push({ dimension: 'growth', text: q }));
+            
+            return questions;
+        }
+        
+        function generateEmotionQuestions() {
+            const questions = [];
+            
+            // 情绪频率维度
+            const frequencyQuestions = [
+                '在一周的时间里，我的情绪会在多少个极端状态之间反复波动？',
+                '当我安静下来观察自己的情绪时，我是否能清晰地分辨出细微的层次和变化？',
+                '我的情绪是否会因为一些微不足道的小事而剧烈起伏？',
+                '我在面对同样的情境时，情绪反应是否总是那么稳定和一致？',
+                '当我回忆自己的情绪体验时，我能用具体的词汇详细描述吗？',
+                '外界的压力、噪音、混乱，能在多大程度上轻易地干扰我的情绪状态？',
+                '我是否能坦然地接纳自己的各种情绪，包括那些所谓的"负面"情绪？',
+                '我的情绪变化是否有某种周期性规律，比如在特定的时间或情境下更容易出现？',
+                '当我和不同的人在一起时，我是否能保持自己的情绪不被他人的情绪所影响？',
+                '我对自己的情绪有多少程度的自主性和掌控力？'
+            ];
+            
+            // 能量波动维度
+            const fluctuationQuestions = [
+                '当突然遇到重大的挫折或打击时，我的第一反应是崩溃还是能稳住？',
+                '从深陷的情绪低谷中恢复到平静，我通常需要多长时间？',
+                '当意外的情况让我措手不及时，我是否能迅速调整自己的状态？',
+                '我在工作和生活中能否保持相对稳定的情绪，不会被情绪推着走？',
+                '当压力逐渐累积时，我是否能察觉到情绪的张力并提前处理？',
+                '我的情绪是否经常会超出我的控制，让我做出一些后悔的事？',
+                '面对连续的困难挑战时，我的情绪是越来越低落，还是能在波动中找到平衡？',
+                '当遇到不公平的对待或委屈时，我能否调节自己的情绪而不让愤怒占据上风？',
+                '他人的负面情绪是否容易让我也陷入同样的低落或焦虑？',
+                '当我处于情绪低谷时，我知道用什么具体的方法让自己重新站起来吗？'
+            ];
+            
+            // 心理弹性维度
+            const resilienceQuestions = [
+                '即使遭遇了连续的挫折和失败，我是否还能保持内在的希望和动力？',
+                '当生活中出现大的变故时，我是否能快速调整自己，找到新的方向？',
+                '我是否相信困难只是暂时的，总有办法可以找到解决问题的路径？',
+                '面对不利的局面，我是否还能保持积极的心态，寻找其中的机会？',
+                '当我感到无力改变现状时，我是会放弃还是想办法创造新的可能性？',
+                '在我的经历中，有多少次我能够从失败中总结教训，让自己变得更强？',
+                '当压力大到快要压垮我时，我是否还有最后的心理防线不会被击穿？',
+                '在别人认为不可能的情况下，我是否还能看到一线希望并坚持努力？',
+                '我是否能在逆境中保持清晰的头脑，理性地做出正确的决定？',
+                '我对生活的态度是充满热情和希望，还是充满了无力感和绝望？'
+            ];
+            
+            // 情绪智慧维度
+            const wisdomQuestions = [
+                '当负面情绪出现时，我能从中看到它想要告诉我什么信息吗？',
+                '我对自己的情绪有足够的理解和认识，而不是被它驱动吗？',
+                '通过情绪的起伏，我是否能更深刻地了解自己的需求和边界？',
+                '我的情绪是否能在关键时刻帮助我做出符合自己真实意愿的决定？',
+                '当复杂的情绪交织在一起时，我是否能理清头绪，不被混乱淹没？',
+                '我对自己的情绪有多少程度的掌控力，而不是成为情绪的奴隶？',
+                '通过观察他人的情绪，我是否能更好地理解他们的需求和感受？',
+                '我是否利用情绪的起伏来激发自己的创造力和灵感？',
+                '随着年龄的增长，我对情绪的理解和处理能力是否在不断提升？',
+                '我在人际互动中，是否能利用情绪智慧来化解冲突、增进理解？'
+            ];
+            
+            frequencyQuestions.forEach((q, i) => questions.push({ dimension: 'frequency', text: q }));
+            fluctuationQuestions.forEach((q, i) => questions.push({ dimension: 'fluctuation', text: q }));
+            resilienceQuestions.forEach((q, i) => questions.push({ dimension: 'resilience', text: q }));
+            wisdomQuestions.forEach((q, i) => questions.push({ dimension: 'wisdom', text: q }));
+            
+            return questions;
+        }
+        
+        function generateSoulQuestions() {
+            const questions = [];
+            
+            // 直觉力维度
+            const intuitionQuestions = [
+                '在没有明显逻辑依据的情况下，我是否会突然产生某种强烈的"感觉"或"预感"？',
+                '当我面对选择时，我的直觉声音是否总是那么清晰，以至于我无法忽视它？',
+                '在过去的一年里，我的直觉曾几次被事实证明是准确的？',
+                '当直觉告诉我某个方向或决定时，我是否有勇气去信任它，即使周围的人都反对？',
+                '我是否经常通过冥想、独处或其他方式来增强和清晰我的直觉？',
+                '我能清晰地区分什么是真正的直觉，什么只是我的情绪或偏见？',
+                '当我的直觉和逻辑分析发生冲突时，我更倾向于相信哪一方？为什么？',
+                '我是否相信，每个人内心深处都有一种智慧，可以引导我们做出正确的选择？',
+                '我的直觉在艺术创作、人际关系或人生决策中，是否曾发挥过关键作用？',
+                '我是否愿意花时间去培养和深化我的直觉能力？'
+            ];
+            
+            // 创造力维度
+            const creativityQuestions = [
+                '当我被要求创造一些新的东西时，灵感是否会源源不断地涌现？',
+                '在日常生活中，我是否能从看似平凡的事物中发现独特的美和意义？',
+                '当我的创作遇到瓶颈时，我通常需要多久才能突破并产生新的想法？',
+                '我的想象力是否足够丰富，能够从不同角度思考问题，产生新颖的见解？',
+                '在过去一个月里，我有多少次因为一个新想法或创意而感到兴奋？',
+                '当我有了一个想法时，我是否有能力和方法将它转化为现实？',
+                '在我的工作或生活中，我是否能经常找到创新的方式解决问题？',
+                '当我面对创作任务时，我是能够自由地表达自己，还是受限于固定的模式？',
+                '我相信创造力是一种可以培养的能力吗？还是在某些人身上是天生的？',
+                '在独处的时候，我是否经常会产生一些有趣的点子或想法？'
+            ];
+            
+            // 连接力维度
+            const connectionQuestions = [
+                '当我和一个人进行深度交流时，我是否能感受到彼此之间产生的能量共振？',
+                '在人群中，我是否能感受到自己与他人之间那种无形的连接和共鸣？',
+                '当有人分享他们的痛苦和困难时，我是否能真正地感同身受，仿佛自己也经历了同样的感受？',
+                '我是否经常能理解他人言语或行为背后隐藏的真正需求和情绪？',
+                '当我面对冲突或分歧时，我是否能看到对方的立场，找到双方都能接受的解决方案？',
+                '我在人际交往中，是倾向于建立深层的、有意义的关系，还是停留在表面？',
+                '我是否经常感到孤独，即使身边有很多人陪伴？',
+                '当我和朋友或家人在一起时，我是否能感受到那种温暖和归属感？',
+                '我相信人与人之间存在着超越语言的深层连接和共鸣吗？',
+                '在我的人际关系中，真诚和理解有多重要？'
+            ];
+            
+            // 生命力维度
+            const vitalityQuestions = [
+                '当我从睡梦中醒来时，我对新的一天是充满期待还是感到厌倦？',
+                '我最近一次对生活感到真正的激情和兴奋，是在什么时候？',
+                '我清楚是什么在滋养我的生命力，让我的精神焕发光彩吗？',
+                '当身体发出疲惫的信号时，我是选择强行坚持还是听从它的信号？',
+                '我的生命力是否影响着我做事的效率、创造力和影响力？',
+                '我对生活的态度是积极的、充满活力的，还是消极的、被动的？',
+                '在过去三个月里，有多少次我感到自己充满了活力和能量？',
+                '当我遇到困难挑战时，我的生命力是会因此而被消耗，还是能够得到某种程度的增强？',
+                '我对死亡和生命结束有什么理解？这种理解如何影响我的生活态度？',
+                '我相信生命的意义吗？我相信自己存在的价值吗？'
+            ];
+            
+            intuitionQuestions.forEach((q, i) => questions.push({ dimension: 'intuition', text: q }));
+            creativityQuestions.forEach((q, i) => questions.push({ dimension: 'creativity', text: q }));
+            connectionQuestions.forEach((q, i) => questions.push({ dimension: 'connection', text: q }));
+            vitalityQuestions.forEach((q, i) => questions.push({ dimension: 'vitality', text: q }));
+            
+            return questions;
+        }
+        
+        function generateRelationshipQuestions() {
+            const questions = [];
+            
+            // 边界感维度
+            const boundaryQuestions = [
+                '当同事或朋友提出不合理的要求时，我是否能清晰地表达我的边界？',
+                '当有人侵入我的个人空间或时间时，我是否能及时察觉并维护我的边界？',
+                '当我的需求和他人发生冲突时，我是否能优先考虑自己的需求，而不是一味地让步？',
+                '当别人过度分享他们的负面情绪时，我是否能温和但坚定地拒绝成为他们的情绪垃圾桶？',
+                '当我的尊严被冒犯时，我是否能勇敢地站出来维护自己？',
+                '在亲密关系中，我是否能保持自己的独立性，而不是完全融合到对方？',
+                '我是否清楚地知道什么是我可以接受的，什么是我不能接受的？',
+                '当别人试图通过道德绑架或情感勒索来控制我时，我是否能识别并拒绝？',
+                '我的边界是否足够清晰和坚定，让周围的人知道我的底线在哪里？',
+                '我是否相信，维护自己的边界并不会伤害他人，反而能建立更健康的关系？'
+            ];
+            
+            // 共情力维度
+            const empathyQuestions = [
+                '当听别人讲述他们的故事时，我是否能感受到他们的情绪，而不是只是听到信息？',
+                '当看到别人陷入痛苦或困难时，我是否能理解他们的感受，而不是仅仅从逻辑上分析？',
+                '在人际互动中，我是否能准确把握他人的情绪变化，并做出恰当的回应？',
+                '当他人表达脆弱时，我是否能给予真正的理解和支持，而不是匆忙给出建议？',
+                '我是否能从他人的角度思考问题，而不只是站在自己的立场上评判？',
+                '在群体中，我是否能感知到那些没有被说出口的情绪和需求？',
+                '当不同的人表达完全相反的观点时，我是否能理解他们的角度，而不是觉得他们在反对我？',
+                '我对他人的痛苦是否有过真实的共鸣，仿佛自己也经历了同样的经历？',
+                '我是否相信，理解和共情是建立深度关系的基础？',
+                '我是否能区分他人的情绪和我的情绪，不被他人的情绪过度影响？'
+            ];
+            
+            // 表达力维度
+            const expressionQuestions = [
+                '当我有重要的想法或需求想要表达时，我是否能清晰地组织语言，让对方听懂？',
+                '在公开场合发言时，我的表达是流畅自然，还是紧张得语无伦次？',
+                '当我需要拒绝别人的要求或请求时，我的表达是坚定而礼貌的，还是吞吞吐吐？',
+                '当我感到委屈或不满时，我是能恰当地表达出来，还是会压抑在心里？',
+                '当我想要赞美或感谢别人时，我的表达能准确传达我的心意吗？',
+                '在我和别人沟通时，我的表达方式是清晰有效的，还是经常被误解？',
+                '在讨论复杂的问题时，我是否能用简洁明了的语言让对方听懂我的观点？',
+                '当我需要协商或说服别人时，我的表达方式具有说服力吗？',
+                '我是否相信，良好的表达能力是建立健康关系的关键？',
+                '我的表达风格是自然真实的，还是带着面具，让人感觉不到真实的我？'
+            ];
+            
+            // 影响力维度
+            const influenceQuestions = [
+                '当我提出一个想法或建议时，有多少人会认真考虑并采纳？',
+                '在我的团队或朋友圈里，当需要做决策时，人们会参考我的意见吗？',
+                '当我和别人发生分歧时，我的观点和立场能在多大程度上影响对方的看法？',
+                '当别人情绪低落或迷茫时，我的态度和话语能在多大程度上让他们重新振作？',
+                '在我的专业领域或擅长的事情上，我是否经常被认可为专家或权威？',
+                '当需要引导一个团队或项目时，人们愿意跟随我的领导吗？',
+                '当需要我站出来为某个价值观或理念代言时，我的声音有多少分量？',
+                '在我的社交媒体或公众平台上，我的观点能引起多少人的共鸣和讨论？',
+                '我相信真正的影响力来自于对他人的贡献，还是来自于职位或权力？',
+                '我是否愿意用我的影响力去帮助他人成长和成功？'
+            ];
+            
+            boundaryQuestions.forEach((q, i) => questions.push({ dimension: 'boundary', text: q }));
+            empathyQuestions.forEach((q, i) => questions.push({ dimension: 'empathy', text: q }));
+            expressionQuestions.forEach((q, i) => questions.push({ dimension: 'expression', text: q }));
+            influenceQuestions.forEach((q, i) => questions.push({ dimension: 'influence', text: q }));
+            
+            return questions;
+        }
+        
+        // 生成选项 - 每个维度专属选项
+        function generateOptionsForDimension(dimension) {
+            const optionTemplates = {
+                'trauma': [
+                    '几乎不，我的童年充满了温暖和爱，很少有不愉快的记忆',
+                    '偶尔会，但大部分时候我的童年是温暖和安全的',
+                    '有时会，童年有过一些不愉快的经历，但可以接受',
+                    '经常，童年中有很多让我痛苦或困扰的记忆',
+                    '是的，童年经历给我带来了很多创伤，至今仍影响着我'
+                ],
+                'selfCare': [
+                    '总是，我像对待最好的朋友一样温柔地对待自己',
+                    '大部分时候，我能好好照顾自己的需求和感受',
+                    '有时能，但很多情况下我忽略了自己的需求',
+                    '很少，我经常对自己很苛刻，很少奖励自己',
+                    '完全不，我总是把自己的需求放在最后一位'
+                ],
+                'awareness': [
+                    '非常清晰，我几乎总是能立即识别自己的情绪',
+                    '比较清晰，大部分时候能准确觉察到自己的情绪',
+                    '一般，有时能觉察到，有时后知后觉',
+                    '不太清晰，我经常后知后觉，事后才意识到自己的情绪',
+                    '完全不清晰，我完全不知道自己是什么情绪'
+                ],
+                'growth': [
+                    '已经完成了深刻的疗愈成长，我感觉比以前更完整',
+                    '正在疗愈路上，已经取得了明显的进步和改变',
+                    '刚开始有意识地疗愈自己，意识到成长的重要性',
+                    '意识到问题存在，但还没有开始采取具体的行动',
+                    '从没想过这个问题，对自己的成长问题没有意识'
+                ],
+                'frequency': [
+                    '非常稳定，我的情绪很少大幅度波动',
+                    '比较稳定，大部分时候情绪状态还不错',
+                    '一般，情绪波动属于正常范围，时好时坏',
+                    '不稳定，情绪经常在两个极端之间波动',
+                    '非常不稳定，情绪极不稳定，经常失控'
+                ],
+                'fluctuation': [
+                    '恢复很快，压力或打击后我通常很快就能恢复平静',
+                    '比较快，我能在较短时间内从情绪低谷中走出来',
+                    '一般，我需要一定的时间来平复情绪',
+                    '比较慢，从打击中恢复需要很长时间',
+                    '很难恢复，打击后我会陷入情绪低谷很久'
+                ],
+                'resilience': [
+                    '非常强，任何逆境都不会击倒我的乐观',
+                    '很强，大部分时候我能保持积极心态',
+                    '一般，有时乐观，有时悲观，看情况',
+                    '较弱，经常感到无力，容易被情绪压垮',
+                    '极弱，总是感到绝望，看不到希望'
+                ],
+                'wisdom': [
+                    '总能从情绪中学习成长，我的情绪是我的老师',
+                    '大部分时候能从情绪中学习和成长',
+                    '有时能学到一些东西，有时被情绪控制',
+                    '很少能从情绪中学习，经常被情绪牵着走',
+                    '完全被情绪控制，无法从情绪中获得任何智慧'
+                ],
+                'intuition': [
+                    '非常准确，我的直觉总是正确地指引着我',
+                    '比较准确，大部分时候我的直觉是对的',
+                    '一般，有时准确，有时候不准',
+                    '不太准确，我的直觉经常出错',
+                    '完全不准，我的直觉从来没有对过'
+                ],
+                'creativity': [
+                    '非常丰富，我的灵感总是源源不断',
+                    '比较丰富，经常有新的想法和创意',
+                    '一般，偶尔有灵感，但不算多',
+                    '较少，我的想法比较循规蹈矩',
+                    '完全没有，我总是按部就班，没有创新'
+                ],
+                'connection': [
+                    '很容易，我能轻松地与任何人建立深层连接',
+                    '比较容易，大部分时候能建立良好的关系',
+                    '一般，有时能建立深度关系，有时不能',
+                    '较难，很难与他人建立真正深层的连接',
+                    '非常难，我总是感到孤独，无法与人建立连接'
+                ],
+                'vitality': [
+                    '充满激情，我每天都对生活充满热情和能量',
+                    '精力充沛，大部分时候我感觉自己很有活力',
+                    '一般，有时有活力，有时疲惫',
+                    '疲惫乏力，经常感到缺乏动力和能量',
+                    '毫无激情，我对生活完全提不起精神'
+                ],
+                'boundary': [
+                    '非常清晰，我总能明确表达并坚定维护自己的边界',
+                    '比较清晰，大部分时候能维护自己的边界',
+                    '一般，有时能坚持，有时会妥协',
+                    '比较模糊，我经常不敢说"不"，容易被侵犯',
+                    '完全没有，我完全没有边界，总是被人得寸进尺'
+                ],
+                'empathy': [
+                    '非常强，我能深刻理解和感受他人的情绪',
+                    '比较强，大部分时候能理解他人的感受',
+                    '一般，有时能理解，有时不能',
+                    '较弱，很难真正理解他人的感受',
+                    '完全没有，我完全无法感受他人的情绪'
+                ],
+                'expression': [
+                    '非常清晰，我总能准确表达自己的想法和需求',
+                    '比较清晰，大部分时候能表达清楚',
+                    '一般，有时能表达，有时表达困难',
+                    '不太清晰，我的表达经常被误解',
+                    '完全不清晰，我完全不敢表达自己'
+                ],
+                'influence': [
+                    '很大，我的话语和行动总能影响他人',
+                    '比较大，大部分时候我能影响周围的人',
+                    '一般，有时有影响力，有时没有',
+                    '较小，我很少能影响他人的决定或看法',
+                    '完全没有，我的话语和行动完全无人关注'
+                ]
+            };
+            
+            if (optionTemplates[dimension]) {
+                return optionTemplates[dimension].map((text, index) => ({
+                    text: text,
+                    score: 5 - index
+                }));
+            }
+            
+            return [
+                { text: '完全是这样，这完全符合我的实际情况', score: 5 },
+                { text: '大部分时候是这样，但偶尔有例外', score: 4 },
+                { text: '有时是这样，有时不是，不确定', score: 3 },
+                { text: '不太符合我，大多数时候不是这样', score: 2 },
+                { text: '完全不符合我，我从不是这样', score: 1 }
+            ];
+        }
+        
+        let currentTest = null;
+        let currentQuestion = 0;
+        let answers = [];
+        
+        function startTest(testId) {
+            currentTest = testId;
+            currentQuestion = 0;
+            answers = [];
+            
+            document.getElementById('homePage').classList.remove('active');
+            showQuestion(0);
+        }
+        
+        function showQuestion(index) {
+            currentQuestion = index;
+            const testInfo = tests[currentTest];
+            const questions = questionBanks[currentTest];
+            const question = questions[index];
+            
+            const currentOptions = generateOptionsForDimension(question.dimension);
+            
+            const dimensionMap = {
+                'trauma': '童年创伤探索',
+                'selfCare': '自我关怀评估',
+                'awareness': '情绪觉察测评',
+                'growth': '疗愈成长追踪',
+                'frequency': '情绪频率探索',
+                'fluctuation': '能量波动追踪',
+                'resilience': '心理弹性评估',
+                'wisdom': '情绪智慧测评',
+                'intuition': '直觉力测试',
+                'creativity': '创造力评估',
+                'connection': '连接力探索',
+                'vitality': '生命力测评',
+                'boundary': '边界感评估',
+                'empathy': '共情力测试',
+                'expression': '表达力探索',
+                'influence': '影响力测评'
+            };
+            
+            const container = document.getElementById('testContainer');
+            container.innerHTML = `
+                <div class="page active">
+                    <button class="back-btn" onclick="goBack()">← 返回首页</button>
+                    
+                    <div class="test-header">
+                        <h2>${testInfo.name}</h2>
+                        <p class="subtitle">${testInfo.description}</p>
+                    </div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-info">
+                            <span>问题 ${index + 1} / ${questions.length}</span>
+                            <span>${Math.round((index / questions.length) * 100)}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${(index / questions.length) * 100}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-card">
+                        <span class="dimension-tag">${dimensionMap[question.dimension]}</span>
+                        <div class="question-text">${question.text}</div>
+                        <div class="options">
+                            ${currentOptions.map((opt, i) => `
+                                <button class="option-btn" onclick="selectAnswer(${opt.score}, '${question.dimension}')">
+                                    <span class="radio"></span>
+                                    <span>${opt.text}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function selectAnswer(score, dimension) {
+            answers.push({
+                questionIndex: currentQuestion,
+                dimension: dimension,
+                score: score
+            });
+            
+            const questions = questionBanks[currentTest];
+            
+            if (currentQuestion < questions.length - 1) {
+                showQuestion(currentQuestion + 1);
+            } else {
+                showResult();
+            }
+        }
+        
+        function showResult() {
+            const testInfo = tests[currentTest];
+            const scores = calculateScores();
+            const resultType = getResultType(scores.total);
+            
+            document.getElementById('testContainer').innerHTML = '';
+            
+            const container = document.getElementById('resultContainer');
+            const themeClass = testInfo.theme;
+            
+            container.innerHTML = `
+                <div class="page active result-container">
+                    <button class="back-btn" onclick="goBack()">← 返回首页</button>
+                    
+                    <div class="result-header ${themeClass}">
+                        <div class="result-icon">${resultType.icon}</div>
+                        <h2 class="result-title">${resultType.title}</h2>
+                        <p class="result-subtitle">${resultType.subtitle}</p>
+                        <div class="result-score">综合得分: ${Math.round(scores.total)}分</div>
+                    </div>
+                    
+                    <div class="data-section">
+                        <h3 class="section-title">📊 四维度深度分析</h3>
+                        <div class="radar-container">
+                            <canvas id="radarCanvas" width="450" height="400"></canvas>
+                        </div>
+                        <div class="dimension-grid">
+                            ${testInfo.dimensions.map((dim, i) => {
+                                const dimKey = Object.keys(scores)[i];
+                                const value = scores[dimKey];
+                                const level = getDimensionLevel(value);
+                                return `
+                                    <div class="dimension-card">
+                                        <div class="label">${dim}</div>
+                                        <div class="value">${Math.round(value)}分</div>
+                                        <div class="level" style="color: ${level.color}">${level.text}</div>
+                                        <div class="bar">
+                                            <div class="bar-fill" style="width: ${value}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-section">
+                        <h3 class="section-title">📝 深度分析报告</h3>
+                        <div class="analysis-content">
+                            <p>${resultType.analysis}</p>
+                            <div class="highlight-box">
+                                <strong>💡 核心洞察：</strong><br>${resultType.insight}
+                            </div>
+                            <p>${resultType.detailedAnalysis}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-section">
+                        <h3 class="section-title">💝 专属成长建议</h3>
+                        <div class="advice-grid">
+                            ${resultType.advices.map(advice => `
+                                <div class="advice-item">
+                                    <div class="advice-title">${advice.icon} ${advice.title}</div>
+                                    <div class="advice-text">${advice.text}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="resources-section">
+                        <h3 class="section-title">📚 推荐学习资源</h3>
+                        <div class="resource-grid">
+                            ${resultType.resources.map(resource => `
+                                <div class="resource-item">
+                                    <span class="icon">${resource.icon}</span>
+                                    <div class="content">
+                                        <h4>${resource.title}</h4>
+                                        <p>${resource.description}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn secondary" onclick="restartTest()">重新测试</button>
+                        <button class="action-btn primary" onclick="saveResult()">保存报告</button>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                const dimensionValues = testInfo.dimensions.map((dim, i) => {
+                    return scores[Object.keys(scores)[i]];
+                });
+                drawRadarChart(dimensionValues, testInfo.dimensions);
+            }, 100);
+        }
+        
+        function getDimensionLevel(score) {
+            if (score >= 80) return { text: '卓越', color: '#10b981' };
+            if (score >= 60) return { text: '良好', color: '#3b82f6' };
+            if (score >= 40) return { text: '一般', color: '#f59e0b' };
+            return { text: '需提升', color: '#ef4444' };
+        }
+        
+        function calculateScores() {
+            const scores = {};
+            const counts = {};
+            
+            answers.forEach(ans => {
+                if (!scores[ans.dimension]) scores[ans.dimension] = 0;
+                if (!counts[ans.dimension]) counts[ans.dimension] = 0;
+                scores[ans.dimension] += ans.score;
+                counts[ans.dimension]++;
+            });
+            
+            const results = {};
+            for (let dim in scores) {
+                const avg = scores[dim] / counts[dim];
+                if (dim === 'trauma') {
+                    results[dim] = ((6 - avg) / 5) * 100;
+                } else {
+                    results[dim] = (avg / 5) * 100;
+                }
+            }
+            
+            const totalScore = Object.values(results).reduce((a, b) => a + b, 0) / Object.keys(results).length;
+            
+            return { ...results, total: totalScore };
+        }
+        
+        function getResultType(totalScore) {
+            if (totalScore >= 80) {
+                return {
+                    icon: '🌟',
+                    title: '璀璨星光',
+                    subtitle: '你已经到达了很高的能量层级',
+                    analysis: '你的状态非常出色，在各个维度都表现出色。你不仅拥有强大的内在能量，还能够很好地运用这些能量来创造价值。你的智慧和洞察力让你能够在复杂的环境中保持清晰和稳定。',
+                    insight: '你已经掌握了生活的艺术，能够在挑战中找到机遇，在变化中保持稳定。你的存在本身就是一种力量，能够激励和影响周围的人。',
+                    detailedAnalysis: '你的优势在于你的平衡性和整体性。你不会在某个方面过度发展而忽略其他方面，而是保持了各个维度的和谐统一。这种平衡让你能够应对各种挑战，同时保持内心的平静和清晰。建议你继续保持这种状态，同时可以考虑如何将你的能量分享给更多人。',
+                    advices: [
+                        { icon: '🎯', title: '深化练习', text: '你已经打下了很好的基础，现在可以选择一个你最感兴趣的维度进行深化练习，追求更高的境界。' },
+                        { icon: '🤝', title: '分享智慧', text: '考虑将你的经验和智慧分享给他人，这不仅可以帮助他人，也能让你从不同的角度重新审视自己。' },
+                        { icon: '📚', title: '持续学习', text: '保持谦逊和好奇心，继续探索和学习新的知识和技能，让你的能量不断更新和升级。' },
+                        { icon: '✨', title: '创造价值', text: '思考如何利用你的优势为他人和社会创造更大的价值，让你的能量产生更深远的影响。' }
+                    ],
+                    resources: [
+                        { icon: '📖', title: '《心流》', description: '米哈里·契克森米哈赖的杰作，帮助你理解最佳心理状态' },
+                        { icon: '📖', title: '《正念的奇迹》', description: '一行禅师的经典之作，培养正念和觉察能力' },
+                        { icon: '🎧', title: 'Headspace冥想', description: '专业的冥想和正念练习平台' },
+                        { icon: '👥', title: '心理学社群', description: '加入志同道合的成长社群，互相学习和支持' }
+                    ]
+                };
+            } else if (totalScore >= 60) {
+                return {
+                    icon: '🌸',
+                    title: '绽放的花朵',
+                    subtitle: '你正处于快速成长的阶段',
+                    analysis: '你在很多方面都已经有了不错的表现，特别是在你关注的领域。你正在经历一个快速成长的阶段，每一步都在向更好的自己靠近。虽然还有一些提升空间，但你的进步速度令人鼓舞。',
+                    insight: '你正在形成自己的价值观和处世方式，这种成长中的清晰感让你对未来充满信心。继续保持这种势头，你会达到更高的层次。',
+                    detailedAnalysis: '你的优势在于你的成长性和潜力。你还在发展过程中，但已经展现出了很强的适应能力和学习能力。建议你关注那些相对薄弱的维度，但不要急于求成，成长是一个循序渐进的过程。',
+                    advices: [
+                        { icon: '📝', title: '制定计划', text: '基于测试结果，制定一个30天的成长计划，每天专注于一个小小的进步。' },
+                        { icon: '🧘', title: '正念练习', text: '每天花10-15分钟进行正念冥想，提升自我觉察和内在平静。' },
+                        { icon: '📚', title: '主题阅读', text: '选择一个你想要提升的维度，找3-5本相关的书籍系统学习。' },
+                        { icon: '💬', title: '寻找导师', text: '找到一位在你想要提升的维度有经验的人，向他们学习和请教。' }
+                    ],
+                    resources: [
+                        { icon: '📖', title: '《原则》', description: '瑞·达利欧的生活和工作原则，帮助你建立清晰的思维框架' },
+                        { icon: '📖', title: '《终身成长》', description: '卡罗尔·德韦克的成长型思维经典' },
+                        { icon: '🎧', title: '得到APP', description: '知识服务平台，系统学习各个领域的知识' },
+                        { icon: '👥', title: '成长社群', description: '加入学习社群，与志同道合的人一起成长' }
+                    ]
+                };
+            } else if (totalScore >= 40) {
+                return {
+                    icon: '🌱',
+                    title: '茁壮的小树',
+                    subtitle: '你已经踏上了成长的旅程',
+                    analysis: '你已经开始意识到成长的重要性，并在某些方面有了改善。虽然还有很大的提升空间，但你的觉醒和行动本身就是一种进步。你现在正在积蓄能量，为未来的爆发做准备。',
+                    insight: '你的种子已经破土而出，虽然还需要时间和养分，但方向是正确的。保持耐心和坚持，你会看到自己的变化。',
+                    detailedAnalysis: '你的优势在于你的潜力和可塑性。你还处在发展的早期阶段，这意味着你有很大的成长空间。建议你从小处着手，选择一个最容易改善的维度开始练习，逐步建立信心和动力。',
+                    advices: [
+                        { icon: '🎯', title: '设定小目标', text: '设定每周一个微小的目标，确保能够完成，逐步建立成就感。' },
+                        { icon: '📖', title: '每天阅读', text: '每天读10-15页书，积少成多，拓宽视野和知识面。' },
+                        { icon: '✍️', title: '写日记', text: '每天记录3件事：今天学到的、今天做到的、明天要做的。' },
+                        { icon: '🌅', title: '晨间仪式', text: '建立一个5-10分钟的晨间仪式，为新的一天设定积极的基调。' }
+                    ],
+                    resources: [
+                        { icon: '📖', title: '《习惯的力量》', description: '查尔斯·杜希格，帮助你理解并建立好习惯' },
+                        { icon: '📖', title: '《微习惯》', description: '斯蒂芬·盖斯的简单方法，通过微小改变实现大进步' },
+                        { icon: '🎧', title: '小习惯APP', description: '帮你建立和追踪好习惯的工具' },
+                        { icon: '👥', title: '习惯养成群', description: '加入习惯养成社群，互相监督和鼓励' }
+                    ]
+                };
+            } else {
+                return {
+                    icon: '🌰',
+                    title: '潜力的种子',
+                    subtitle: '你的能量正在孕育中',
+                    analysis: '你现在可能感到一些困惑或迷茫，但这正是成长的开始。所有的种子在发芽前都需要经历黑暗和孤独。你现在正在积蓄能量，等待着合适的时机绽放。',
+                    insight: '不要低估自己的潜力，每个伟大的成长都始于这样的阶段。现在的你正在为未来的蜕变做准备，保持耐心和信心。',
+                    detailedAnalysis: '你的优势在于你的纯真和可能性。你现在可能还不清楚自己的方向和目标，但这恰恰意味着你拥有无限的可能性。建议你多接触不同的领域和事物，找到自己真正感兴趣和擅长的方向。',
+                    advices: [
+                        { icon: '🔍', title: '探索尝试', text: '尝试不同的活动和爱好，找到让你感到兴奋和有动力的事情。' },
+                        { icon: '🤝', title: '结交朋友', text: '多认识一些积极向上的人，从他们身上获得启发和动力。' },
+                        { icon: '📺', title: '观看演讲', text: '每周看一次TED演讲或励志视频，拓展视野和获得启发。' },
+                        { icon: '🌙', title: '睡前反思', text: '每天睡前花5分钟反思今天学到的和可以改进的地方。' }
+                    ],
+                    resources: [
+                        { icon: '📖', title: '《被讨厌的勇气》', description: '阿德勒心理学的入门，帮助你建立健康的自我观' },
+                        { icon: '📖', title: '《遇见未知的自己》', description: '张德芬的灵性成长经典，探索内在自我' },
+                        { icon: '🎧', title: '喜马拉雅', description: '丰富的音频内容，随时随地学习' },
+                        { icon: '👥', title: '心理成长群', description: '加入心理成长社群，获得支持和陪伴' }
+                    ]
+                };
+            }
+        }
+        
+        function drawRadarChart(values, labels) {
+            const canvas = document.getElementById('radarCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 - 20;
+            const radius = 120;
+            
+            const angles = [0, Math.PI / 2, Math.PI, Math.PI * 3 / 2];
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景网格
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                for (let j = 0; j < 4; j++) {
+                    const angle = angles[j] - Math.PI / 2;
+                    const r = (radius / 5) * i;
+                    const x = centerX + r * Math.cos(angle);
+                    const y = centerY + r * Math.sin(angle);
+                    if (j === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+            
+            // 绘制轴线
+            ctx.beginPath();
+            for (let i = 0; i < 4; i++) {
+                const angle = angles[i] - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.stroke();
+            
+            // 绘制标签
+            ctx.font = '14px -apple-system, sans-serif';
+            ctx.fillStyle = '#e0e5ec';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            for (let i = 0; i < 4; i++) {
+                const angle = angles[i] - Math.PI / 2;
+                const x = centerX + (radius + 35) * Math.cos(angle);
+                const y = centerY + (radius + 35) * Math.sin(angle);
+                ctx.fillText(labels[i], x, y);
+            }
+            
+            // 绘制数据区域
+            ctx.beginPath();
+            for (let i = 0; i < 4; i++) {
+                const angle = angles[i] - Math.PI / 2;
+                const r = (values[i] / 100) * radius;
+                const x = centerX + r * Math.cos(angle);
+                const y = centerY + r * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.4)');
+            gradient.addColorStop(1, 'rgba(118, 75, 162, 0.4)');
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.9)';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 绘制数据点
+            for (let i = 0; i < 4; i++) {
+                const angle = angles[i] - Math.PI / 2;
+                const r = (values[i] / 100) * radius;
+                const x = centerX + r * Math.cos(angle);
+                const y = centerY + r * Math.sin(angle);
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 7, 0, Math.PI * 2);
+                ctx.fillStyle = '#667eea';
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff';
+                ctx.fill();
+            }
+        }
+        
+        function goBack() {
+            document.getElementById('testContainer').innerHTML = '';
+            document.getElementById('resultContainer').innerHTML = '';
+            document.getElementById('homePage').classList.add('active');
+            currentTest = null;
+            answers = [];
+        }
+        
+        function restartTest() {
+            answers = [];
+            currentQuestion = 0;
+            startTest(currentTest);
+        }
+        
+        function saveResult() {
+            alert('🎉 报告保存成功！\n\n建议收藏并定期回顾这份报告，观察自己的成长变化。\n\n测试内容仅供自我探索，不能替代专业心理诊断。如有需要，请寻求专业心理咨询师的帮助。\n\n祝你在成长的道路上越走越远！✨');
+        }
+    </script>
+</body>
+</html>
